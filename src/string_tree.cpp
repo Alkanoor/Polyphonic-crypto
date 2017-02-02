@@ -148,7 +148,7 @@ std::ostream& String_Tree::show(std::ostream& os, const std::string& cur)
     return os;
 }
 
-void String_Tree::select_with_oracle(const std::function<bool(const std::string&)>& oracle, std::vector<std::string>& granted_Ngrams, std::vector<float>& associated_values) const
+bool String_Tree::select_with_oracle(const std::function<bool(const std::string&)>& oracle, std::vector<std::string>& granted_Ngrams, std::vector<float>& associated_values) const
 {
     size_t bloc_size = granted_Ngrams.size();
     if(!bloc_size)
@@ -158,10 +158,10 @@ void String_Tree::select_with_oracle(const std::function<bool(const std::string&
     }
     associated_values.resize(bloc_size);
     int cur_index = 0;
-    select_recursive_with_oracle(oracle, granted_Ngrams, associated_values, cur_index, bloc_size, 0, "");
+    return select_recursive_with_oracle(oracle, granted_Ngrams, associated_values, cur_index, bloc_size, 0, "");
 }
 
-void String_Tree::select_recursive_with_oracle(const std::function<bool(const std::string&)>& oracle, std::vector<std::string>& granted_Ngrams, std::vector<float>& associated_values, int& cur_index, size_t bloc_size, int cur_depth, const std::string& prefix) const
+bool String_Tree::select_recursive_with_oracle(const std::function<bool(const std::string&)>& oracle, std::vector<std::string>& granted_Ngrams, std::vector<float>& associated_values, int& cur_index, size_t bloc_size, int cur_depth, const std::string& prefix) const
 {
     if(cur_depth>=4)
     {
@@ -173,10 +173,15 @@ void String_Tree::select_recursive_with_oracle(const std::function<bool(const st
             granted_Ngrams.resize(granted_Ngrams.size()+bloc_size);
             associated_values.resize(associated_values.size()+bloc_size);
         }
-        return;
+        return true;
     }
 
+    bool ret = false;
+    
     for(auto it : children)
         if(oracle(prefix+it.first))
-            it.second.select_recursive_with_oracle(oracle, granted_Ngrams, associated_values, cur_index, bloc_size, cur_depth+1, prefix+it.first);
+            if(it.second.select_recursive_with_oracle(oracle, granted_Ngrams, associated_values, cur_index, bloc_size, cur_depth+1, prefix+it.first))
+                ret = true;
+
+    return ret;
 }

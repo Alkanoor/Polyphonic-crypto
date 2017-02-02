@@ -32,7 +32,7 @@ class String_Tree
 
         template <size_t N>
         void select(const std::array<std::vector<char>, N>& forbidden, std::vector<std::string>& granted_Ngrams, std::vector<float>& associated_values) const;
-        void select_with_oracle(const std::function<bool(const std::string&)>& oracle, std::vector<std::string>& granted_Ngrams, std::vector<float>& associated_values) const;
+        bool select_with_oracle(const std::function<bool(const std::string&)>& oracle, std::vector<std::string>& granted_Ngrams, std::vector<float>& associated_values) const;
 
     private:
         float weight;
@@ -41,7 +41,7 @@ class String_Tree
 
         template <size_t N>
         void select_recursive(const std::array<std::vector<char>, N>& forbidden, std::vector<std::string>& granted_Ngrams, std::vector<float>& associated_values, int& cur_index, size_t bloc_size, int cur_depth, const std::string& prefix) const;
-        void select_recursive_with_oracle(const std::function<bool(const std::string&)>& oracle, std::vector<std::string>& granted_Ngrams, std::vector<float>& associated_values, int& cur_index, size_t bloc_size, int cur_depth, const std::string& prefix) const;
+        bool select_recursive_with_oracle(const std::function<bool(const std::string&)>& oracle, std::vector<std::string>& granted_Ngrams, std::vector<float>& associated_values, int& cur_index, size_t bloc_size, int cur_depth, const std::string& prefix) const;
 };
 
 

@@ -9,8 +9,8 @@
 typedef Crypto_Object<Monoalphabetic_Key, Words_And_4grams_Weight> MyCryptobject;
 //typedef Crypto_Object<Polyalphabetic_Key, Words_And_4grams_Weight> MyCryptobject;
 
-#define TOTAL_SIZE 10
-#define TO_KEEP 3
+#define TOTAL_SIZE 100
+#define TO_KEEP 30
 
 
 float max_evaluation = -1;
@@ -66,12 +66,12 @@ int main()
     String_Tree tree;
     std::vector<std::string> to_add_string;
     std::vector<float> to_add_float;
-    read_strings_with_weight("data/english_quadgrams_reduced.txt", to_add_string, to_add_float);
+    read_strings_with_weight("data/english_quadgrams_reduced2.txt", to_add_string, to_add_float);
     tree.add_strings_with_weight(to_add_string, to_add_float);
     //tree.show(std::cout);
 
     Easy_Log_In_File::getInfoLog()->addHandler(std::shared_ptr<Handler>(new Stdout_Handler()));
-    MyCryptobject::set_cipher("ACBODOISODKAOKSODK");
+    MyCryptobject::set_cipher("KZQLSAQXWZSHKEBAQWYPPQTZBXABEADSZKHASDZPDDZPIZPSKAWWZOHALQAJDMAJKAJDAPSAJDZQXJDPQDSZPAPOJDAQXPMBZDPQQZNAPEBAQWKPSBRZSJGZQAGPSYPJTZPKMAKWJQAJDYPJTZPKADDJSAJDYPJTZPKRZSSJMJAJDDSZPKAQKMZQXSATJQEBAQWKJBBZQMPBLPSAQDXPQWZPSSZPUTJSLJQABWZPBZJSYPJWZQXPJKAJDABAOZSDHPJDKTAWAQDHSZMZQXBAWPQABTZPKAKHJSAQDIPKYPABRABBPWJQADJZQIPKYPAPDZPSQJK");
     MyCryptobject::set_4gram_tree(tree);
 
     std::array<MyCryptobject, TOTAL_SIZE> crypto_objects;
@@ -85,7 +85,7 @@ int main()
 
     int n_iterations = 1000;
     int cur_size = 1;
-    int ratio = (TOTAL_SIZE-TO_KEEP)/100;
+    int ratio = (TOTAL_SIZE-TO_KEEP)/10;
     for(int i=0; i<n_iterations; i++)
     {
         std::cout<<"Iteration "<<i<<std::endl;

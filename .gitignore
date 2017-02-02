@@ -1,0 +1,4 @@
+.*.gdb.*
+peda.*
+main
+test

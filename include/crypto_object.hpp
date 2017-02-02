@@ -75,7 +75,7 @@ Crypto_Object<Key, Weight, N, M>::Crypto_Object(const Key& k) :
     if(!logger)
         logger = Easy_Log_In_File::getInfoLog();
 }
-
+#include <iostream>
 template <typename Key, typename Weight, size_t N, size_t M>
 void Crypto_Object<Key, Weight, N, M>::get_a_following_object(Crypto_Object& res) throw ()
 {
@@ -125,10 +125,10 @@ void Crypto_Object<Key, Weight, N, M>::get_a_following_object(Crypto_Object& res
         {
             qualities[i] = it->second.first*it->second.first*it->second.first;
             Ngrams[i] = it->first;
-            #ifdef DEBUG
+            /*#ifdef DEBUG
                 (*logger)<<"Add a 4gram "<<Ngrams[i]<<" with weight "<<qualities[i];
                 logger->endLine();
-            #endif
+            #endif*/
             it++;
         }
         else
@@ -147,8 +147,27 @@ void Crypto_Object<Key, Weight, N, M>::get_a_following_object(Crypto_Object& res
     //key.get_forbidden_chars(chosen, Ngrams[chosen]);
     std::function<bool(const std::string&)> key_oracle = std::bind(&Key::oracle, key, chosen, Ngrams[chosen], std::placeholders::_1);
     std::vector<std::string> granted_4grams(10000);
-    std::vector<float> associated_values(10000);
-    Ngram_tree.select_with_oracle(key_oracle, granted_4grams, associated_values);
+    std::vector<float> associated_values(10000, 0);
+    if(!Ngram_tree.select_with_oracle(key_oracle, granted_4grams, associated_values))
+    {
+        associated_values[0] = 1;
+        granted_4grams[0] = "aaaa";
+        for(int j=0; j<4; j++)
+            granted_4grams[0][j] = key.get_correspondance(chosen, cipher[chosen]);
+        std::cout<<"granted_4grams[0] : "<<granted_4grams[0]<<std::endl;
+        for(int j=0; j<4; j++)
+            if(granted_4grams[0][j] == '?')
+            {
+                granted_4grams[0][j] = 'A';
+                while(granted_4grams[0][j]<='Z' && !key_oracle(granted_4grams[0].substr(j+1)))
+                    granted_4grams[0][j]++;
+                if(granted_4grams[0][j] > 'Z')
+                {
+                    get_a_previous_object(res);
+                    return;
+                }
+            }
+    }
 
     std::vector<int> sorted;
 
@@ -197,7 +216,7 @@ void Crypto_Object<Key, Weight, N, M>::get_a_previous_object(Crypto_Object& res)
 
     if(!Ngrams_counter.size())
     {
-        get_a_previous_object(res);
+        get_a_following_object(res);
         return;
     }
 
